@@ -1,1 +1,3 @@
-/bin/
+bin/
+nbproject/
+*.o
