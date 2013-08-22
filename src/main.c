@@ -10,9 +10,14 @@ char read_buffer[100];
 expand_array input_data;
 int total_len = 0;
 
+#ifdef DEBUG
+int *global_buffer, *global_input;
+int loop = 1;
+#endif
+
 int main(int argc, char *argv[]) {
     int value = 0;
-    
+
     errno = 0;
 
     if (argc != 3) {
@@ -33,7 +38,7 @@ int main(int argc, char *argv[]) {
         perror("Message");
         return 3;
     }
-    
+
     expand_array_init(&input_data);
 
     while (fgets(read_buffer, 100, input_file) != NULL) {
@@ -42,23 +47,28 @@ int main(int argc, char *argv[]) {
     }
 
     int *buffer = malloc(sizeof (int) * input_data.largest_index);
-    memcpy(buffer, input_data.data, sizeof(int) * input_data.largest_index);
-    
+    memcpy(buffer, input_data.data, sizeof (int) * input_data.largest_index);
+
+
+#ifdef DEBUG
     total_len = input_data.largest_index;
-    
+    global_buffer = buffer;
+    global_input = input_data.data;
+#endif
+
     // print_list(input_data, LEN);
     sort(input_data.data, buffer, input_data.largest_index);
     // print_list(input_data, LEN);
 
     free(buffer);
-    
+
     write_file(output_file, input_data.data, input_data.largest_index);
 
     expand_array_free(&input_data);
-    
+
     fclose(input_file);
     fclose(output_file);
-    
+
     printf("Done!\n");
     return 0;
 }
@@ -98,8 +108,15 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
     while (right_i < right_len) {
         buffer[i++] = right[right_i++];
     }
-    
-    print_list(buffer, total_len);
+#ifdef DEBUG
+    printf("*******\n");
+    printf("Loop: %i\n", loop++);
+    printf("Input \n");
+    print_list(global_input, total_len);
+    printf("Buffer \n");
+    print_list(global_buffer, total_len);
+    printf("*******\n");
+#endif
 }
 
 void print_list(int *input, int len) {
@@ -111,7 +128,7 @@ void print_list(int *input, int len) {
 }
 
 void write_file(FILE *fp, int* input, int len) {
-    for(int i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         fprintf(fp, "%i\n", input[i]);
     }
 }
