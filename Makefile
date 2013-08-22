@@ -5,7 +5,7 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = gcc
-CFLAGS = -ansi -Wall -pedantic -std=c99 -g -O0 
+CFLAGS = -pg -ansi -Wall -pedantic -std=c99
 	
 all: $(OBJS) $(TARGET)
 	@echo Compilation complete
@@ -18,7 +18,7 @@ all: $(OBJS) $(TARGET)
 $(TARGET): $(OBJS)
 	@echo
 	@echo Linking...
-	$(CC) $(OBJS) -o bin/$(TARGET) 
+	$(CC) $(OBJS) -pg -o bin/$(TARGET) 
 	
 clean:
 	@echo

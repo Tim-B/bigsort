@@ -1,8 +1,15 @@
+#!/bin/bash
+
 FILE="bin/random.txt"
 
 rm -f $FILE
 
-for i in {1..1000000} 
-do
-    echo $RANDOM >> $FILE
-done
+
+awk "
+BEGIN{
+	srand();
+	for(i = 1; i < 100000000; i++) {
+		printf(\"%i\\n\", rand() * 0xFFFFFFFF) >> \"$FILE\"
+	}
+}"
+
