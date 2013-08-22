@@ -8,6 +8,7 @@
 
 char read_buffer[100];
 expand_array input_data;
+int total_len = 0;
 
 int main(int argc, char *argv[]) {
     int value = 0;
@@ -42,7 +43,9 @@ int main(int argc, char *argv[]) {
 
     int *buffer = malloc(sizeof (int) * input_data.largest_index);
     memcpy(buffer, input_data.data, sizeof(int) * input_data.largest_index);
-
+    
+    total_len = input_data.largest_index;
+    
     // print_list(input_data, LEN);
     sort(input_data.data, buffer, input_data.largest_index);
     // print_list(input_data, LEN);
@@ -84,6 +87,10 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
         }
     }
 
+    /* 
+     * Whichever list finished first, the other list must be copied back
+     * too.
+     */
     while (left_i < left_len) {
         buffer[i++] = left[left_i++];
     }
@@ -92,7 +99,7 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
         buffer[i++] = right[right_i++];
     }
     
-    // print_list(buffer, LEN);
+    print_list(buffer, total_len);
 }
 
 void print_list(int *input, int len) {
