@@ -9,6 +9,8 @@
 char read_buffer[100];
 expand_array input_data;
 int total_len = 0;
+int limit = 0;
+int line_cnt = 0;
 
 #ifdef DEBUG
 int *global_buffer, *global_input;
@@ -20,9 +22,14 @@ int main(int argc, char *argv[]) {
 
     errno = 0;
 
-    if (argc != 3) {
-        printf("Usage is %s inputfile outputfile\n", argv[0]);
+    if (argc < 3 || argc > 4) {
+        printf("Usage is %s inputfile outputfile [limit]\n", argv[0]);
         return 1;
+    }
+
+    if (argc == 4) {
+        limit = atoi(argv[3]);
+        printf("Limit %i\n", limit);
     }
 
     input_file = fopen(argv[1], "r");
@@ -41,9 +48,11 @@ int main(int argc, char *argv[]) {
 
     expand_array_init(&input_data);
 
-    while (fgets(read_buffer, 100, input_file) != NULL) {
+    while ((limit == 0 || limit > line_cnt)
+            && (fgets(read_buffer, 100, input_file) != NULL)) {
         value = atoi(read_buffer);
         expand_array_put(&input_data, value);
+        line_cnt++;
     }
 
     int *buffer = malloc(sizeof (int) * input_data.largest_index);
@@ -89,7 +98,11 @@ void sort(int *buffer, int* list, int len) {
 void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
     int left_i, right_i, i;
 
-    for (left_i = right_i = i = 0; left_i < left_len && right_i < right_len;) {
+    left_i = 0;
+    right_i = 0;
+    i = 0;
+
+    while (left_i < left_len && right_i < right_len) {
         if (left[left_i] < right[right_i]) {
             buffer[i++] = left[left_i++];
         } else {

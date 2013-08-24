@@ -5,7 +5,7 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = gcc
-CFLAGS = -pg -ansi -Wall -pedantic -std=c99 -DDEBUG
+CFLAGS = -O3 -ansi -Wall -pedantic -std=c99
 	
 all: $(OBJS) $(TARGET)
 	@echo Compilation complete
@@ -23,4 +23,5 @@ $(TARGET): $(OBJS)
 clean:
 	@echo
 	@echo Cleaning...
-	rm -f bin/*
+	rm -f bin/$(TARGET)
+	rm src/*.o
