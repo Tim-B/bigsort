@@ -17,6 +17,18 @@ int *global_buffer, *global_input;
 int loop = 1;
 #endif
 
+/**
+ * Mergesort based sorting algorithm designed for large datasets
+ * 
+ * References:
+ * http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort#C
+ * http://rosettacode.org/wiki/Sorting_algorithms/Merge_sort#C
+ * https://gist.github.com/codeblocks/898596
+ * 
+ * @param argc arguments: inputfile outputfile [limit]
+ * @param argv number of arguments (3 or 4)
+ * @return 
+ */
 int main(int argc, char *argv[]) {
     int value = 0;
 
@@ -82,6 +94,13 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+/**
+ * Perform recursive step on both halfs of the dataset.
+ * 
+ * @param buffer 
+ * @param list
+ * @param len
+ */
 void sort(int *buffer, int* list, int len) {
     int mid = len / 2;
 
@@ -89,12 +108,27 @@ void sort(int *buffer, int* list, int len) {
         return;
     }
 
+    /*
+     * Note that the list and buffer variables are swapped from the
+     * method signature. This facilitates swapping between the unused
+     * portion of the two "buffers". 
+     */
     sort(list, buffer, mid);
     sort(list + mid, buffer + mid, len - mid);
 
     merge(list, mid, list + mid, len - mid, buffer);
 }
 
+/**
+ * Merge two arrays into a third array (in this case two are probably
+ * the same physical array but treated as separate).
+ * 
+ * @param left The first array
+ * @param left_len The length of the first array
+ * @param right The second array
+ * @param right_len The length of the second array
+ * @param buffer The array to merged into
+ */
 void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
     int left_i, right_i, i;
 
@@ -121,6 +155,7 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
     while (right_i < right_len) {
         buffer[i++] = right[right_i++];
     }
+    
 #ifdef DEBUG
     printf("*******\n");
     printf("Loop: %i\n", loop++);
