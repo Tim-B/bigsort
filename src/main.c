@@ -167,6 +167,12 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
 #endif
 }
 
+/**
+ * Helper function to print an array. Useful for debugging.
+ * 
+ * @param input the array to print.
+ * @param len the length of the array.
+ */
 void print_list(int *input, int len) {
     printf("=========\n");
     for (int i = 0; i < len; i++) {
@@ -175,6 +181,13 @@ void print_list(int *input, int len) {
     printf("=========\n");
 }
 
+/**
+ * Writes an array to file.
+ * 
+ * @param fp a file pointer to the file.
+ * @param input the array to be written.
+ * @param len the length of that array in elements.
+ */
 void write_file(FILE *fp, int* input, int len) {
     for (int i = 0; i < len; i++) {
         fprintf(fp, "%i\n", input[i]);
