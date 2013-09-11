@@ -101,20 +101,15 @@ int main(int argc, char *argv[]) {
  * @param list
  * @param len
  */
-void sort(int *buffer, int* list, int len) {
-    int i, j, i_limit;
+void sort(int *list, int* buffer, int len) {
+    int i, j;
 
-    i_limit = len / 2 + 1;
-    for (i = 1; i <= i_limit; i *= 2) {
+    for (i = 1; i <= len / 2 + 2; i *= 2) {
         for (j = i; j < len; j += 2 * i) {
-            merge(list + (j - i), j, list + j, MIN(j + i, len), buffer + (j - i));
-           
+            merge(list, j - i, j, MIN(j + i, len), buffer);
+            printf("i %i , j %i end %i \n", i, j, MIN(j + i, len));
         }
-        memcpy(buffer, list, len);
     }
-    
-
-
 }
 
 /**
@@ -127,18 +122,23 @@ void sort(int *buffer, int* list, int len) {
  * @param right_len The length of the second array
  * @param buffer The array to merged into
  */
-void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
+void merge(int *list, int start, int middle, int end, int *buffer) {
+
+#ifdef DEBUG
+    printf("*******\n");
+    printf("Loop: %i\n", loop++);
+#endif
     int left_i, right_i, i;
 
-    left_i = 0;
-    right_i = 0;
-    i = 0;
+    left_i = start;
+    right_i = middle;
+    i = start;
 
-    while (left_i < left_len && right_i < right_len) {
-        if (left[left_i] < right[right_i]) {
-            buffer[i++] = left[left_i++];
+    while (left_i < middle && right_i < end) {
+        if (list[left_i] < list[right_i]) {
+            buffer[i++] = list[left_i++];
         } else {
-            buffer[i++] = right[right_i++];
+            buffer[i++] = list[right_i++];
         }
     }
 
@@ -146,24 +146,24 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
      * Whichever list finished first, the other list must be copied back
      * too.
      */
-    while (left_i < left_len) {
-        buffer[i++] = left[left_i++];
+    while (left_i < middle) {
+        buffer[i++] = list[left_i++];
     }
 
-    while (right_i < right_len) {
-        buffer[i++] = right[right_i++];
+    while (right_i < end) {
+        buffer[i++] = list[right_i++];
     }
-    
+
+
 
 #ifdef DEBUG
-    printf("*******\n");
-    printf("Loop: %i\n", loop++);
     printf("Input \n");
     print_list(global_input, total_len);
     printf("Buffer \n");
     print_list(global_buffer, total_len);
     printf("*******\n");
 #endif
+    memcpy(list + start, buffer + start, (end - start) * sizeof (int));
 }
 
 /**
