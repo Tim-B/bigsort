@@ -95,28 +95,26 @@ int main(int argc, char *argv[]) {
 }
 
 /**
- * Perform recursive step on both halfs of the dataset.
+ * Perform recursive step on bot        h halfs of the dataset.
  * 
  * @param buffer 
  * @param list
  * @param len
  */
 void sort(int *buffer, int* list, int len) {
-    int mid = len / 2;
+    int i, j, i_limit;
 
-    if (len <= 1) {
-        return;
+    i_limit = len / 2 + 1;
+    for (i = 1; i <= i_limit; i *= 2) {
+        for (j = i; j < len; j += 2 * i) {
+            merge(list + (j - i), j, list + j, MIN(j + i, len), buffer + (j - i));
+           
+        }
+        memcpy(buffer, list, len);
     }
+    
 
-    /*
-     * Note that the list and buffer variables are swapped from the
-     * method signature. This facilitates swapping between the unused
-     * portion of the two "buffers". 
-     */
-    sort(list, buffer, mid);
-    sort(list + mid, buffer + mid, len - mid);
 
-    merge(list, mid, list + mid, len - mid, buffer);
 }
 
 /**
@@ -156,6 +154,7 @@ void merge(int *left, int left_len, int* right, int right_len, int *buffer) {
         buffer[i++] = right[right_i++];
     }
     
+
 #ifdef DEBUG
     printf("*******\n");
     printf("Loop: %i\n", loop++);

@@ -9,6 +9,7 @@
 #define	MAIN_H
 #include <stdio.h>
 #include "expand_array.h"
+#define MIN(a,b) (((a)<(b))?(a):(b))
 
 FILE *input_file, *output_file;
 void sort(int *buffer, int* list, int len);
