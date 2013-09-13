@@ -5,7 +5,8 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = gcc
-CFLAGS = -O0 -ansi -Wall -pedantic -std=c99 -pg
+CFLAGS = -O0 -ansi -Wall -pedantic -std=c99 -DDEBUG
+LFLAGS = -pg -fopenmp
 	
 all: $(OBJS) $(TARGET)
 	@echo Compilation complete
@@ -13,12 +14,12 @@ all: $(OBJS) $(TARGET)
 %.o: %.c
 	@echo
 	@echo Compiling $<...
-	$(CC) $(CFLAGS) -c $< -o $@	
+	$(CC) $(LFLAGS) $(CFLAGS) -c $< -o $@	
 	
 $(TARGET): $(OBJS)
 	@echo
 	@echo Linking...
-	$(CC) $(OBJS) -pg -o bin/$(TARGET) 
+	$(CC) $(OBJS) $(LFLAGS) -o bin/$(TARGET) 
 	
 clean:
 	@echo

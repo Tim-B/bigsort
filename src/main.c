@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdlib.h> 
 #include <string.h>
+#include <omp.h>
 #include "expand_array.h"
 
 char read_buffer[100];
@@ -31,7 +32,6 @@ int loop = 1;
  */
 int main(int argc, char *argv[]) {
     int value = 0;
-
     errno = 0;
 
     if (argc < 3 || argc > 4) {
@@ -75,6 +75,9 @@ int main(int argc, char *argv[]) {
     total_len = input_data.largest_index;
     global_buffer = buffer;
     global_input = input_data.data;
+    int nthreads;
+    nthreads = omp_get_num_threads();
+    printf("Number of threads %i\n", nthreads);
 #endif
 
     // print_list(input_data, LEN);
@@ -95,7 +98,7 @@ int main(int argc, char *argv[]) {
 }
 
 int min(int a, int b) {
-    if(a < b) {
+    if (a < b) {
         return a;
     }
     return b;
@@ -111,12 +114,14 @@ int min(int a, int b) {
 void sort(int *list, int* buffer, int len) {
     int i, j;
 
-    for(i = 1; i < len; i *= 2) {
-        for(j = i; j < len; j += 2 * i) {
+    for (i = 1; i < len; i *= 2) {
+#pragma omp parallel for private(j)
+        for (j = i; j < len; j += 2 * i) {
             merge(list, j - i, j, min(i + j, len), buffer);
         }
-        memcpy(list, buffer, sizeof(int) * len);
+        memcpy(list, buffer, sizeof (int) * len);
     }
+
 }
 
 /**
@@ -130,10 +135,12 @@ void sort(int *list, int* buffer, int len) {
  * @param buffer The array to merged into
  */
 void merge(int *list, int start, int middle, int end, int *buffer) {
-
+    
 #ifdef DEBUG
+    int tid;
     printf("*******\n");
-    printf("Loop: %i\n", loop++);
+    tid = omp_get_thread_num();
+    printf("Loop: %i thread %i of %i\n", loop++, tid, omp_get_num_threads());
 #endif
     int left_i, right_i, i;
 
