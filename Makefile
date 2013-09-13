@@ -5,7 +5,7 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = gcc
-CFLAGS = -O0 -ansi -Wall -pedantic -std=c99 -pg -DDEBUG
+CFLAGS = -O0 -ansi -Wall -pedantic -std=c99 -pg
 	
 all: $(OBJS) $(TARGET)
 	@echo Compilation complete

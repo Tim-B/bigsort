@@ -14,7 +14,7 @@ while read -r line;
 do
     current=$line
     if [ "$current" -lt "$prev" ]; then
-        echo "Failure! $current not greater than $prev"
+        echo "Failure! $current not greater than $prev on line $total"
         ((fail++))
     fi
     prev=$current

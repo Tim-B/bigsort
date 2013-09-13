@@ -94,6 +94,13 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+int min(int a, int b) {
+    if(a < b) {
+        return a;
+    }
+    return b;
+}
+
 /**
  * Perform recursive step on bot        h halfs of the dataset.
  * 
@@ -104,11 +111,11 @@ int main(int argc, char *argv[]) {
 void sort(int *list, int* buffer, int len) {
     int i, j;
 
-    for (i = 1; i <= len / 2 + 2; i *= 2) {
-        for (j = i; j < len; j += 2 * i) {
-            merge(list, j - i, j, MIN(j + i, len), buffer);
-            printf("i %i , j %i end %i \n", i, j, MIN(j + i, len));
+    for(i = 1; i < len; i *= 2) {
+        for(j = i; j < len; j += 2 * i) {
+            merge(list, j - i, j, min(i + j, len), buffer);
         }
+        memcpy(list, buffer, sizeof(int) * len);
     }
 }
 
@@ -162,8 +169,9 @@ void merge(int *list, int start, int middle, int end, int *buffer) {
     printf("Buffer \n");
     print_list(global_buffer, total_len);
     printf("*******\n");
+    printf("Start %i, middle %i, end %i, len %i \n", start, middle, end, (end - start));
 #endif
-    memcpy(list + start, buffer + start, (end - start) * sizeof (int));
+
 }
 
 /**
