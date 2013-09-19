@@ -5,7 +5,7 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = mpicc
-CFLAGS = -O0 -ansi -Wall -pedantic -std=c99
+CFLAGS = -O3 -ansi -Wall -pedantic -std=c99
 LFLAGS = -pg -fopenmp
 	
 all: $(OBJS) $(TARGET)
