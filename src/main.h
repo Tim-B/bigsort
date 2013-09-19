@@ -8,12 +8,13 @@
 #ifndef MAIN_H
 #define	MAIN_H
 #include <stdio.h>
+#include "global.h"
+#include "worker.h"
+#include "sort.h"
 #include "expand_array.h"
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#include "distribute.h"
 
 FILE *input_file, *output_file;
-void sort(int *buffer, int* list, int len);
-void merge(int *list, int start, int middle, int end, int *buffer);
 void print_list(int *input, int len);
 void write_file(FILE *fp, int* input, int len);
 
