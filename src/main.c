@@ -23,9 +23,10 @@ int line_cnt = 0;
  * @return 
  */
 int main(int argc, char *argv[]) {
-    int targetNode, mpiBuffer;
+    int targetNode, i;
     int value = 0;
-    int nothing = 0;
+    bool nodeStat;
+    data_parcel localBuffer;
     errno = 0;
 
 #ifdef DEBUG   
@@ -33,11 +34,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     total_len = 0;
-
     init_workforce(argc, argv);
-
     expand_array_init(&input_data);
-
 
     if (isLeader()) {
 
@@ -73,21 +71,23 @@ int main(int argc, char *argv[]) {
             if (targetNode == 0) {
                 expand_array_put(&input_data, value);
             } else {
-               MPI_Send(&value, 1, MPI_INT, targetNode, PROGRESS_TAG, MPI_COMM_WORLD); 
+                nodePush(targetNode, value);
             }
 
             line_cnt++;
         }
         end_work();
     } else {
-        MPI_Status status;
-        
-        while(1) {
-            MPI_Recv(&mpiBuffer, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-            if(status.MPI_TAG == END_TAG) {
+
+        while (1) {
+            nodeStat = nodeRecieve(0, &localBuffer);
+            if (nodeStat) {
+                for (i = 0; i < localBuffer.size; i++) {
+                    expand_array_put(&input_data, localBuffer.data[i]);
+                }
+            } else {
                 break;
             }
-            expand_array_put(&input_data, mpiBuffer);
         }
 
     }
@@ -104,12 +104,9 @@ int main(int argc, char *argv[]) {
     nthreads = omp_get_num_threads();
     printf("Number of threads %i\n", nthreads);
 #endif
-
-    sort(input_data.data, buffer, input_data.largest_index);
-    
     MPI_Barrier(MPI_COMM_WORLD);
-
-    free(buffer);
+    sort(input_data.data, buffer, input_data.largest_index);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     if (isLeader()) {
         write_file(output_file, input_data.data, input_data.largest_index);
@@ -117,15 +114,16 @@ int main(int argc, char *argv[]) {
         fclose(input_file);
         fclose(output_file);
     } else {
-        for(int i = 0; i< input_data.largest_index; i++) {
-            MPI_Send(&input_data.data[i], 1, MPI_INT, 0, PROGRESS_TAG, MPI_COMM_WORLD);  
+        for (int i = 0; i < input_data.largest_index; i++) {
+            nodePush(0, input_data.data[i]);
         }
-        MPI_Send(&nothing, 1, MPI_INT, 0, END_TAG, MPI_COMM_WORLD);  
+        finish_node(0);
     }
 
     expand_array_free(&input_data);
 
     teardown_workforce();
+    free(buffer);
 
     printf("Done!\n");
     return 0;

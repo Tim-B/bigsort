@@ -5,11 +5,14 @@ OBJS = $(SRC:.c=.o)
 RAND_FILE = "bin/random.txt"
 	
 CC = mpicc
-CFLAGS = -O3 -ansi -Wall -pedantic -std=c99
+CFLAGS = -O0 -pg -ansi -Wall -pedantic -std=c99
 LFLAGS = -pg -fopenmp
 	
 all: $(OBJS) $(TARGET)
 	@echo Compilation complete
+	
+verify: src/verify/verify.c
+	gcc -o bin/verify src/verify/verify.c
 
 %.o: %.c
 	@echo
