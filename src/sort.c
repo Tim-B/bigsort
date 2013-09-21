@@ -9,17 +9,33 @@
  * @param list
  * @param len
  */
-void sort(int *list, int* buffer, int len) {
-    int i, j;
+void sort(int *list, int *buffer, int len) {
+    int i, j, *listPt, *bufferPt, *tmpPt, end, leftOver;
+#ifdef DEBUG   
+    printf("List %p buffer %p\n", (void*) list, (void*) buffer);
+    printf("Len %i\n", len);
+#endif
+
+    listPt = list;
+    bufferPt = buffer;
+
 
     for (i = 1; i < len; i *= 2) {
-#pragma omp parallel for private(j)
-        for (j = i; j < len; j += 2 * i) {
-            merge(list, j - i, j, min(i + j, len), buffer);
+#ifdef DEBUG   
+        printf("=============== Seg %i start ===============\n", i);
+#endif
+#pragma omp parallel for private(j), shared(bufferPt, listPt, len, i), lastprivate(end)
+        for (j = i; j <= len; j += 2 * i) {
+            end = min(i + j, len);
+            merge(listPt, j - i, j, end, bufferPt);
         }
-        memcpy(list, buffer, sizeof (int) * len);
+        leftOver = len - end;
+        memcpy(bufferPt + end, listPt + end, sizeof (int) * leftOver);
+        tmpPt = bufferPt;
+        bufferPt = listPt;
+        listPt = tmpPt;
     }
-
+    memcpy(list, listPt, sizeof (int) * len);
 }
 
 /**
@@ -33,7 +49,7 @@ void sort(int *list, int* buffer, int len) {
  * @param buffer The array to merged into
  */
 void merge(int *list, int start, int middle, int end, int *buffer) {
-    
+
 #ifdef DEBUG
     int tid;
     printf("*******\n");
@@ -69,10 +85,10 @@ void merge(int *list, int start, int middle, int end, int *buffer) {
 
 
 #ifdef DEBUG
-    printf("Input \n");
-    print_list(global_input, total_len);
-    printf("Buffer \n");
-    print_list(global_buffer, total_len);
+    printf("Input %p \n", (void*) list);
+    print_list(list, total_len);
+    printf("Buffer %p \n", (void*) buffer);
+    print_list(buffer, total_len);
     printf("*******\n");
     printf("Start %i, middle %i, end %i, len %i \n", start, middle, end, (end - start));
 #endif
